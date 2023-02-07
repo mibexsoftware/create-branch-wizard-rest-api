@@ -1,0 +1,272 @@
+{
+    "openapi" : "3.0.1",
+    "info" : {
+      "title" : "Create Branch Wizard for Bitbucket Server REST API",
+      "description" : "REST API documentation for the plug-in Create Branch Wizard for Bitbucket Server.\n                                The REST API allows you to maintain the branch mappings of a repository.",
+      "contact" : {
+        "name" : "Mibex Software GmbH",
+        "url" : "https://www.mibexsoftware.com"
+      },
+      "license" : {
+        "name" : "Copyright (c) 2023 by Mibex Software GmbH, Switzerland. All rights reserved.",
+        "url" : "https://mibexsoftware.com/imprint/"
+      },
+      "version" : "v1"
+    },
+    "servers" : [ {
+      "url" : "https://YOUR_BITBUCKET_SERVER/rest/createbranchwizard/1.0"
+    } ],
+    "paths" : {
+      "/projects/{projectKey}/repos/{repositorySlug}/branch-mappings" : {
+        "get" : {
+          "tags" : [ "Branch mappings" ],
+          "summary" : "Returns the branch mappings for this repository.",
+          "operationId" : "getBranchMappings",
+          "parameters" : [ {
+            "name" : "projectKey",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }, {
+            "name" : "repositorySlug",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Branch mappings found",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/RestBranchMappings"
+                  }
+                }
+              }
+            },
+            "401" : {
+              "description" : "The currently authenticated user does not have REPO_ADMIN credentials"
+            },
+            "404" : {
+              "description" : "Project or Repository not found"
+            }
+          }
+        },
+        "put" : {
+          "tags" : [ "Branch mappings" ],
+          "summary" : "Updates a branch mapping",
+          "operationId" : "updateBranchMapping",
+          "parameters" : [ {
+            "name" : "projectKey",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }, {
+            "name" : "repositorySlug",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          } ],
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BranchMapping"
+                }
+              }
+            },
+            "required" : true
+          },
+          "responses" : {
+            "200" : {
+              "description" : "Branch mapping updated",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/BranchMapping"
+                  }
+                }
+              }
+            },
+            "401" : {
+              "description" : "The currently authenticated user does not have REPO_ADMIN credentials"
+            },
+            "404" : {
+              "description" : "Project, Repository or Branch Mapping not found"
+            }
+          }
+        },
+        "post" : {
+          "tags" : [ "Branch mappings" ],
+          "summary" : "Creates a branch mapping",
+          "operationId" : "addBranchMapping",
+          "parameters" : [ {
+            "name" : "projectKey",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }, {
+            "name" : "repositorySlug",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          } ],
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BranchMapping"
+                }
+              }
+            },
+            "required" : true
+          },
+          "responses" : {
+            "200" : {
+              "description" : "Branch mapping created",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/BranchMapping"
+                  }
+                }
+              }
+            },
+            "400" : {
+              "description" : "Invalid input parameters like a non-existing Jira project key"
+            },
+            "401" : {
+              "description" : "The currently authenticated user does not have REPO_ADMIN credentials"
+            },
+            "404" : {
+              "description" : "Project or Repository not found"
+            }
+          }
+        },
+        "delete" : {
+          "tags" : [ "Branch mappings" ],
+          "summary" : "Deletes a branch mapping in this repository.",
+          "operationId" : "deleteBranchMapping",
+          "parameters" : [ {
+            "name" : "projectKey",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }, {
+            "name" : "repositorySlug",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }, {
+            "name" : "id",
+            "in" : "query",
+            "schema" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Branch mapping deleted"
+            },
+            "401" : {
+              "description" : "The currently authenticated user does not have REPO_ADMIN credentials"
+            },
+            "404" : {
+              "description" : "Project, Repository or Branch Mapping not found"
+            }
+          }
+        }
+      }
+    },
+    "components" : {
+      "schemas" : {
+        "BranchMapping" : {
+          "type" : "object",
+          "properties" : {
+            "branchFrom" : {
+              "type" : "string",
+              "description" : "The branch name you want to branch from when a new branch is created for the chosen JIRA project and issue type."
+            },
+            "branchNameStrategy" : {
+              "type" : "string",
+              "description" : "The strategy to use for building branch names. Either BRANCH_TYPE or FLEXIBLE_BRANCH_NAME",
+              "enum" : [ "BRANCH_TYPE", "FLEXIBLE_BRANCH_NAME" ]
+            },
+            "branchNameTemplate" : {
+              "type" : "string",
+              "description" : "Variables you can use: $issueKey, $fixVersion, $component, $issueSummary, $parentIssueKey. Example: $component/$fixVersion/$issueType/$issueKey-$issueSummary resulting in backend/1.0/bugfix/BRANCHWIZ-12-flexible-branch-strategy"
+            },
+            "branchType" : {
+              "type" : "string",
+              "description" : "The branch type you want to use for the chosen JIRA project and issue type.",
+              "enum" : [ "FEATURE", "RELEASE", "CUSTOM", "HOTFIX", "BUGFIX" ]
+            },
+            "customBranchPrefix" : {
+              "type" : "string",
+              "description" : "The prefix for custom branches, e.g. 'security-fixes'. The plug-in will append the JIRA issue key to the branch name, resulting in branch names like 'security-fixes/MYPROJ-123-CSRF-problem'."
+            },
+            "duplications" : {
+              "type" : "string",
+              "description" : "List of repositories that use the same branch mappings as this one."
+            },
+            "id" : {
+              "type" : "integer",
+              "description" : "ID of the branch mapping. Only necessary when updating a mapping.",
+              "format" : "int32"
+            },
+            "jiraComponentId" : {
+              "type" : "integer",
+              "description" : "The JIRA component for this branch mapping. This allows you to assign different repositories for different components of the same JIRA project.",
+              "format" : "int64"
+            },
+            "jiraIssueTypeId" : {
+              "type" : "integer",
+              "description" : "The JIRA issue type ID for this branch mapping. Whenever a branch is created from this JIRA project and issue type, the chosen branch type and branch from values below are filled in by the plug-in.",
+              "format" : "int64"
+            },
+            "jiraProjectKey" : {
+              "type" : "string",
+              "description" : "The JIRA project key that belongs to this repository. You can have multiple mappings with different JIRA projects for the same repository."
+            },
+            "overrideBranchFrom" : {
+              "type" : "boolean",
+              "description" : "true if you want to override the branch from value (otherwise, the default branch for the repository is taken)."
+            },
+            "removeJiraIssueSummary" : {
+              "type" : "boolean",
+              "description" : "By default Bitbucket adds the JIRA issue key and the summary to the branch name. If you enable this option, only the JIRA issue key will be used."
+            }
+          }
+        },
+        "RestBranchMappings" : {
+          "required" : [ "branchMappings" ],
+          "type" : "object",
+          "properties" : {
+            "branchMappings" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/BranchMapping"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
